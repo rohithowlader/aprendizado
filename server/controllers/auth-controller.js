@@ -1,4 +1,5 @@
 const User = require("../models/user-model");
+
 const home = async (req, res) => {
   try {
     res.status(200).send("Welcome to my page using router");
@@ -15,8 +16,18 @@ const register = async (req, res) => {
     if (userExist) {
       return res.status(400).json({ message: "email already exists" });
     }
-    await User.create({ username, email, phone, password });
-    res.status(200).send({ message: req.body });
+
+    const userCreated = await User.create({
+      username,
+      email,
+      phone,
+      password,
+    });
+    res.status(201).send({
+      message: "Registration Successful",
+      token: await userCreated.generateToken(),
+      userId: userCreated._id.toString(),
+    });
   } catch (error) {
     console.log(error);
   }
