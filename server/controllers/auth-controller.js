@@ -1,3 +1,4 @@
+const User = require("../models/user-model");
 const home = async (req, res) => {
   try {
     res.status(200).send("Welcome to my page using router");
@@ -8,7 +9,14 @@ const home = async (req, res) => {
 
 const register = async (req, res) => {
   try {
-    res.status(200).send("Welcome to Registeration page using router");
+    //console.log(req.body);
+    const { username, email, phone, password } = req.body;
+    const userExist = await User.findOne({ email: email });
+    if (userExist) {
+      return res.status(400).json({ message: "email already exists" });
+    }
+    await User.create({ username, email, phone, password });
+    res.status(200).send({ message: req.body });
   } catch (error) {
     console.log(error);
   }
